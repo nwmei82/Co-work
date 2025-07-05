@@ -1,11 +1,13 @@
-import UserList from "./component/test"
+import Homepage from "./component/homepage"
+// import UserList from "./component/test"
+
 
 function App() {
 
   return (
     <>
-      <UserList/>
-      <h1 className="text-3xl font-bold underline">Hello frontend</h1>
+
+      <Homepage/>
     </>
   )
 }
