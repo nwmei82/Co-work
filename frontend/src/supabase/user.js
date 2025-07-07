@@ -37,3 +37,25 @@ if (creating.error) {
 
 return creating.data?.[0] || null;
 }
+
+export async function getLocation() {
+  return new Promise((resolve, reject) => {
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
+        resolve({ lat, lng });
+      },
+      (err) => {
+        console.error("Location error", err);
+        reject(err);
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 0,
+      }
+    );
+
+  });
+}
