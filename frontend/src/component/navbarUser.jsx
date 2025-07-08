@@ -1,4 +1,4 @@
-const Navbar = ({onAdmin, onUser}) => {
+const NavbarUser = () => {
 
     return(
         <div className="navbar bg-[#789DBC] shadow-sm px-4">
@@ -6,11 +6,11 @@ const Navbar = ({onAdmin, onUser}) => {
                 <a className="text-2xl font-bold text-[#1d3557]">Give me Space</a>
             </div>
             <div className="flex-none ">
-                <button className="btn btn-link mx-4 font-bold text-[#1d3557]" onClick={onAdmin}>For bussiness</button>
-                <button className="btn bg-[#FFE3E3] text-[#1d3557]" onClick={onUser}>Login</button>
+                <i className="fi fi-sr-bookmark"></i>
+                <p>usename</p>
             </div>
         </div>
     )
 }
 
-export default Navbar;
+export default NavbarUser;

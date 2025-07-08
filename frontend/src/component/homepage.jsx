@@ -11,7 +11,7 @@ const Homepage = () => {
 
     return(
         
-        <div className="bg-[#FEF9F2] w-full h-screen">
+        <div className="bg-[#FEF9F2] w-full">
             <Navbar onAdmin={()=>{setIsopen(true); setRole("admin")}} onUser={()=>{setIsopen(true); setRole("user")}}/>
             <Login isOpen={isOpen} role={role} isClose={()=> setIsopen(false)}/>
             <div className="h-[300px]">
