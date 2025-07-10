@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { checkSignIn, createUser } from "../supabase/user.js";
+import { useAuth } from "./authContext.jsx";
+import { useNavigate } from "react-router-dom";
 
 const Login = ({isOpen,role,isClose}) => {
     const [isSign , setSign] = useState(true);
@@ -11,12 +13,21 @@ const Login = ({isOpen,role,isClose}) => {
     const [emailUp, setEmailUp] = useState('');
     const [error, setError] = useState("")
 
+    const { setUser, showLoginModal,setShowLoginModal,redirect,setRedirect} = useAuth();
+    const navigate = useNavigate();
+
     const handleSignIn = async () => {
         try {
             const user = await checkSignIn(usernameIn, passwordIn);
             if (user) {
+                setUser(user);
+                setShowLoginModal(false);
                 resetForm();
                 isClose();
+                if(redirect){
+                    navigate(redirect)
+                    setRedirect(null)
+                }
             } else {
                 setError("Invalid username or password.");
             }
@@ -25,6 +36,8 @@ const Login = ({isOpen,role,isClose}) => {
             setError("Sign in failed: " + (error?.message || "Unknown error"));
         }
     };
+
+    if (!showLoginModal) return null;
 
     const resetForm = () => {
         setUsernameIn('');
