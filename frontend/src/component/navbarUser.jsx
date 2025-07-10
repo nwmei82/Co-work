@@ -1,5 +1,6 @@
+import { useAuth } from "./authContext";
 const NavbarUser = () => {
-
+    const {user} = useAuth();
     return(
         <div className="navbar bg-[#789DBC] shadow-sm px-4">
             <div className="flex-1">
@@ -7,7 +8,7 @@ const NavbarUser = () => {
             </div>
             <div className="flex-none ">
                 <i className="fi fi-sr-bookmark"></i>
-                <p>usename</p>
+                <p>{user.name}</p>
             </div>
         </div>
     )

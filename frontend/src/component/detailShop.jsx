@@ -1,24 +1,49 @@
-import { useParams } from "react-router-dom";
+import { useParams,useNavigate } from "react-router-dom";
 import { useEffect , useState} from "react";
-import { getShopById } from "../supabase/shop";
+import { getShopById, getReviews } from "../supabase/shop";
+import {MapContainer,TileLayer,Marker, Popup} from "react-leaflet";
+
 const DetailShop = () => {
     const {id} = useParams();
     const [shop, setShop] = useState(null);
+    const [reviews, setReviews] = useState([]);
+    const [latitude, setLat] = useState(null)
+    const [longtitude, setLong] = useState(null)
+    const navigate = useNavigate();
 
     const getShop = async(id) => {
-        console.log("start getShopBYId");
         try{
-            const shop = await getShopById(id);
+            const shopData = await getShopById(id);
+            const shop = shopData[0]
             console.log(shop)
-            setShop(shop[0]);
+            setShop(shop);
+            console.log(shop.shop_location)
+            const [lat,long] = shop.shop_location
+            setLat(lat)
+            setLong(long)
+            console.log(latitude,longtitude)
         }catch (error) {
             console.log("error at getShopById", error);
         }
     }
 
+    const handleback = () => {
+      navigate('/');
+    }
+
+    const fetchReviews = async(id) => {
+      try{
+        const review = await getReviews(id)
+        setReviews(review);
+      }catch(error){
+        console,log("error at getReviews", error)
+      }
+    }
+
     useEffect(()=> {
         if(id){
             getShop(id);
+            fetchReviews(id);
         }
     },[id])
 
@@ -27,7 +52,9 @@ const DetailShop = () => {
     }
     return(
         <div className="p-6 bg-[#fdf8f2] min-h-screen flex justify-center">
-        <div className="w-full max-w-6xl flex flex-row gap-6">
+        <div className="w-full flex flex-row gap-6 text-[#1D3557]">
+        <button className="btn btn-ghost" onClick={()=>handleback()}><span className="material-symbols-outlined">arrow_back</span></button>
+        
 
         {/* Image and thumbnails */}
         <div className="flex flex-col items-center">
@@ -49,7 +76,12 @@ const DetailShop = () => {
               <h2 className="text-2xl font-bold">
                 {shop.shop_name}
               </h2>
-              <p className="text-gray-600 mt-1">{shop.shop_detail_id?.keyword}</p>
+              <div className="flex">
+              {shop.shop_detail_id?.keyword.map(word=>{
+                return(
+                  <p className="text-gray-600 mt-1 mr-2" key={word}>{word}</p>
+              )})}
+              </div>
             </div>
             <span className="material-symbols-outlined text-[24px] cursor-pointer">bookmark</span>
           </div>
@@ -77,29 +109,53 @@ const DetailShop = () => {
           {/* Facilities */}
           <div className="mt-4 text-sm">
             <p className="font-bold">สิ่งอำนวยความสะดวก</p>
-            <div className="flex gap-4 mt-1">
-              <div>✅</div>
-              <div>✅</div>
-              <div>✅</div>
+            <div className="flex flex-row gap-4 mt-1">
+              {shop.shop_detail_id?.facilities.map(faci=> {
+                return(<div key={faci}>✅{faci}</div>
+              )})}
+              
             </div>
-            <p className="text-gray-500 mt-1">หมายเหตุ</p>
+            <div className="flex flex-col mt-4">
+            {shop.shop_detail_id?.notes.length > 0 && (
+              <p className="text-red-500 font-bold">หมายเหตุ</p>
+            )}
+            {shop.shop_detail_id?.notes.map(note=>{
+              return(
+                <div>
+                  <p className="text-red-500" key={note}>{note}</p>
+                </div>
+            )})}
+            </div>
           </div>
 
           {/* Comments */}
           <div className="mt-5">
-            <p className="font-bold">comment</p>
-            <div className="bg-green-100 rounded p-2 mt-2 text-sm">
-              <p className="font-semibold">rewiew<span className="text-yellow-600">review score</span></p>
-              <p>review content</p>
-            </div>
-            <div className="bg-green-100 rounded p-2 mt-2 h-[40px]"></div>
+            {reviews.length > 0 && (
+                <p className="font-bold">comment</p>
+            )}
+            {reviews.map(review =>{
+              return(
+              <div className="bg-green-100 rounded p-2 mt-2 text-sm" key={review.review_id}>
+              <p className="font-semibold">{review.user_id?.name}<span className="text-yellow-600 mx-2">{review.score}</span></p>
+              <p>{review.comment}</p>
+              </div>
+            )})}
+            
           </div>
         </div>
 
         {/* Map + Address */}
         <div className="w-[250px]">
+
           <div className="w-full h-[180px] bg-gray-200 flex items-center justify-center">
-            Map
+            <MapContainer key={`${latitude}-${longtitude}`} center={[latitude, longtitude]} zoom={25} style={{ height: "180px", width: "100%" }}>
+            <TileLayer
+                attribution='&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            />
+            <Marker position={[latitude, longtitude]}>
+            </Marker>
+            </MapContainer>
           </div>
           <p className="text-sm mt-3">{shop.shop_detail_id?.address}</p>
           <p className="text-sm mt-1"><span className="font-bold">เบอร์โทร</span> : {shop.shop_detail_id?.tel}</p>

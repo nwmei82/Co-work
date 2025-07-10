@@ -30,3 +30,17 @@ export async function getShopById(id) {
   }
   return data;
 }
+
+export async function getReviews(id){
+  const {data,error} = await supabase
+    .from('reviews')
+    .select(`
+      *,
+      user_id(*)
+    `)
+    .eq('shop_id',id)
+  if(error){
+    console.log("getReviews error ", error);
+  }
+  return data;
+}

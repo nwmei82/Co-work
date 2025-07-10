@@ -59,3 +59,14 @@ export async function getLocation() {
 
   });
 }
+
+export async function getUserById(id) {
+  console.log("start back getUserById")
+  const {data,error} = await supabase
+    .from('alluser')
+    .select('*')
+    .eq('uid',id)
+  if(error){
+    console.log("error at getUserById")
+  }
+}
