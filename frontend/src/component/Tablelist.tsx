@@ -1,22 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { supabase } from '../supabase/supabase.js';
 
-const Tablelist = ({ handleOpen }) => {
-  const [clients, setClients] = useState([]);
-
-  // ✅ โหลดข้อมูลทั้งหมด
-  const fetchClients = async () => {
-    const { data, error } = await supabase.from('client').select();
-    if (error) {
-      console.error('Fetch error:', error.message);
-    } else {
-      setClients(data);
-    }
-  };
-
-  useEffect(() => {
-    fetchClients(); // รันตอน component โหลดครั้งแรก
-  }, []);
+const Tablelist = ({ handleOpen, clients, fetchClients }) => {
 
   // ✅ ลบข้อมูลตาม id
   const handleDelete = async (id) => {
@@ -25,7 +10,7 @@ const Tablelist = ({ handleOpen }) => {
       console.error('Error deleting client:', error.message);
       return;
     }
-    fetchClients(); // โหลดข้อมูลใหม่หลังลบ
+    fetchClients(); // โหลดใหม่หลังลบ
   };
 
   return (

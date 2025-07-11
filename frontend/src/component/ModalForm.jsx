@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { supabase } from '../supabase/supabase.js';
 
-const Modalform = ({ isOpen, onClose, mode, selectedClient }) => {
+const Modalform = ({ isOpen, onClose, mode, selectedClient, fetchClients }) => {
   const [rate, setRate] = useState('');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -64,6 +64,7 @@ const Modalform = ({ isOpen, onClose, mode, selectedClient }) => {
       return;
     }
 
+    await fetchClients();
     onClose(); // ปิด modal หลังบันทึก
   };
 

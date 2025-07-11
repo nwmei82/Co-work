@@ -7,12 +7,12 @@ const NavbarAdmin = ({onOpen}) => {
     <a className="btn btn-ghost text-xl">daisyUI</a>
   </div>
   <div className="navbar-center">
-    <div classname = "form-control">
+    <div className = "form-control">
       <input type="text" placeholder="Search" className="input input-bordered w-48 md:w-auto" />
     </div>
   </div>
   <div className="navbar-end">
-    <a className="btn btn-primary"onClick={onOpen}>Add Client</a>
+    <a className="btn btn-primary"onClick={onOpen}>Add Space</a>
   </div>
 </div>
 
