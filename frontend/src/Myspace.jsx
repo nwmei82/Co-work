@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'; // ✅ ต้องมี useEffect ด้วย
+import React, { useState, useEffect } from 'react';
 import NavbarAdmin from './component/navbarAdmin.jsx';
 import Tablelist from './component/Tablelist';
 import Modalform from './component/Modalform';
@@ -7,31 +7,31 @@ import { supabase } from './supabase/supabase.js';
 const Myspace = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [modalMode, setModalMode] = useState('add');
-  const [selectedClient, setSelectedClient] = useState(null); // ✅ เพิ่ม
-  const [clients, setClients] = useState([]); 
+  const [selectedDetail, setSelectedDetail] = useState(null); // ✅ เปลี่ยนชื่อให้สอดคล้อง
+  const [details, setDetails] = useState([]); // ✅ ใช้ชื่อ details
 
-  const fetchClients = async () => {
-    const { data, error } = await supabase.from('client').select();
+  const fetchDetails = async () => {
+    const { data, error } = await supabase.from('details').select();
     if (error) {
       console.error('Fetch error:', error.message);
     } else {
-      setClients(data);
+      setDetails(data);
     }
   };
 
   useEffect(() => {
-    fetchClients(); // โหลดครั้งแรก
+    fetchDetails(); // โหลดครั้งแรก
   }, []);
 
-  const handleOpen = (mode, client = null) => {
+  const handleOpen = (mode, detail = null) => {
     setModalMode(mode);
-    setSelectedClient(client);
+    setSelectedDetail(detail);
     setIsOpen(true);
   };
 
   const handleClose = () => {
     setIsOpen(false);
-    setSelectedClient(null);
+    setSelectedDetail(null);
   };
 
   return (
@@ -39,15 +39,15 @@ const Myspace = () => {
       <NavbarAdmin onOpen={() => handleOpen('add')} />
       <Tablelist 
         handleOpen={handleOpen}
-        clients={clients}
-        fetchClients={fetchClients}
+        details={details}
+        fetchDetails={fetchDetails}
       />
       <Modalform
         isOpen={isOpen}
         onClose={handleClose}
         mode={modalMode}
-        selectedClient={selectedClient}
-        fetchClients={fetchClients}
+        selectedDetail={selectedDetail}
+        fetchDetails={fetchDetails}
       />
     </div>
   );
