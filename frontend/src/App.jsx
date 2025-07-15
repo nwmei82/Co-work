@@ -1,5 +1,6 @@
 import { Routes, Route } from 'react-router-dom';
 import Homepage from "./component/homepage"
+import Myspace from "./Myspace"
 import HomeUser from "./component/homeUser"
 import { AuthProvider } from './component/authContext';
 
