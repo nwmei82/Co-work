@@ -34,7 +34,7 @@ const Homepage = () => {
                 <button className="self-center btn btn-ghost text-3xl font-bold text-[#FEF9F2]">^</button>
             </div>
 
-            <TableList /> {/* จะใช้ context ได้เช่นกัน */}
+            <TableList />
         </div>
     )
 }

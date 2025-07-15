@@ -44,3 +44,34 @@ export async function getReviews(id){
   }
   return data;
 }
+
+export async function addBookmark(uid,id) {
+  const { data,error } = await supabase
+  .from('user_bookmarks')
+  .insert([
+    { user_id: uid, shop_id: id },
+  ])
+  if(error){
+    console.log("error at addBookmark", error)
+  }
+  return data;
+}
+
+export async function deleteBookmark(uid,id) {
+  const { error } = await supabase
+    .from('user_bookmarks')
+    .delete()
+    .eq('user_id', uid)
+    .eq('shop_id', id)
+  if(error){
+    console.log("error at deleteBookmark")
+  }
+}
+
+export async function getBookmark(uid){
+  const { data: user_bookmarks, error } = await supabase
+  .from('user_bookmarks')
+  .select('*')
+  
+
+}
