@@ -36,7 +36,8 @@ const TableList = () => {
                 <div className="card-body">
                     <div className="flex justify-between items-start text-[30px]">
                         <h2 className="card-title text-[30px] font-bold">{shop.shop_name}</h2>
-                        <span className="material-symbols-outlined cursor-pointer">bookmark</span>
+                        <button className="btn btn-ghost cursor-pointer ">
+                            <span className="material-symbols-outlined cursor-pointer">bookmark</span></button>
                     </div>
                     <div className="flex flex-row items-center">
                         <div className="flex flex-row items-center">

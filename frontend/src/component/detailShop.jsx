@@ -1,7 +1,8 @@
 import { useParams,useNavigate } from "react-router-dom";
 import { useEffect , useState} from "react";
-import { getShopById, getReviews } from "../supabase/shop";
-import {MapContainer,TileLayer,Marker, Popup} from "react-leaflet";
+import { getShopById, getReviews, addBookmark,deleteBookmark }from "../supabase/shop";
+import {MapContainer,TileLayer,Marker} from "react-leaflet";
+import { useAuth } from "./authContext";
 
 const DetailShop = () => {
     const {id} = useParams();
@@ -9,19 +10,44 @@ const DetailShop = () => {
     const [reviews, setReviews] = useState([]);
     const [latitude, setLat] = useState(null)
     const [longtitude, setLong] = useState(null)
+    const [add, setAdd] = useState(false);
     const navigate = useNavigate();
+
+    const {user} = useAuth();
+
+    const handleAdd = async () => {
+      const uid = user.uid;
+      if(!add){
+        try{
+          console.log("stat handleAdd")
+          const detail = await addBookmark(uid,id);
+          console.log(detail)
+          setAdd(true);
+        }
+        catch(error){
+          console.log("error at handleAdd",error)
+        }
+      }else{
+        try{
+          console.log("start hadle delete");
+          console.log(uid,id)
+          await deleteBookmark(uid,id);
+          setAdd(false);
+        }catch(error){
+          console.log("error at handledelete", error)
+        }
+      }
+      
+    }
 
     const getShop = async(id) => {
         try{
             const shopData = await getShopById(id);
             const shop = shopData[0]
-            console.log(shop)
             setShop(shop);
-            console.log(shop.shop_location)
             const [lat,long] = shop.shop_location
             setLat(lat)
             setLong(long)
-            console.log(latitude,longtitude)
         }catch (error) {
             console.log("error at getShopById", error);
         }
@@ -42,14 +68,18 @@ const DetailShop = () => {
 
     useEffect(()=> {
         if(id){
-            getShop(id);
-            fetchReviews(id);
+          getShop(id);
+          fetchReviews(id);
         }
     },[id])
 
     if (!shop) {
         return <p>Loading...</p>;
     }
+
+    const formatTime = (time) => time?.slice(0, 5).replace(":", ".");
+    const opened = shop.shop_detail_id?.date_time.filter(day => !day.closed)
+
     return(
         <div className="p-6 bg-[#fdf8f2] min-h-screen flex justify-center">
         <div className="w-full flex flex-row gap-6 text-[#1D3557]">
@@ -83,7 +113,15 @@ const DetailShop = () => {
               )})}
               </div>
             </div>
-            <span className="material-symbols-outlined text-[24px] cursor-pointer">bookmark</span>
+
+            <button className="btn btn-ghost cursor-pointer mx-2" onClick={handleAdd}>
+              {add === false ? (
+                <span className="material-symbols-outlined text-[24px]">bookmark</span>
+              ) : (
+              <img src="/bookmark.png" />
+              )}
+            </button>
+            
           </div>
 
           <div className="flex items-center gap-2 mt-3">
@@ -95,8 +133,15 @@ const DetailShop = () => {
           <div className="grid grid-cols-2 gap-4 mt-5 text-sm">
             <div>
               <p className="font-bold">เวลาเปิด-ปิด</p>
-              <p>จันทร์ - ศุกร์: 08.00 - 16.00</p>
-              <p>เสาร์ - อาทิตย์: 09.00 - 17.00</p>
+              {opened.length > 0 ? (
+                opened.map(({ day, openTime, closeTime }) => (
+                  <p key={day}>
+                    {day} : {formatTime(openTime)} - {formatTime(closeTime)}
+                  </p>
+                ))
+              ) : (
+                <p className="text-red-500">ไม่มีวันเปิดทำการ</p>
+              )}
             </div>
             <div>
               <p className="font-bold">จำนวนที่นั่ง</p>
@@ -117,14 +162,11 @@ const DetailShop = () => {
             </div>
             <div className="flex flex-col mt-4">
             {shop.shop_detail_id?.notes.length > 0 && (
+              <>
               <p className="text-red-500 font-bold">หมายเหตุ</p>
+              <p className="text-red-500" >{shop.shop_detail_id?.notes}</p>
+              </>
             )}
-            {shop.shop_detail_id?.notes.map(note=>{
-              return(
-                <div>
-                  <p className="text-red-500" key={note}>{note}</p>
-                </div>
-            )})}
             </div>
           </div>
 
